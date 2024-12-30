@@ -1,0 +1,364 @@
+type Theater {
+  id: ID!
+  name: String!
+  address: String!
+  city: String!
+  state: String!
+  zipCode: String!
+  phoneNumber: String!
+  openTime: String!
+  closeTime: String!
+  standard: Boolean
+  imax: Boolean
+  screenX: Boolean
+  dolby: Boolean
+  showtimes: [Showtime]
+  screens: [Screen]
+  latitude: String!
+  longitude: String!
+}
+
+scalar DateTime
+
+type Showtime {
+  id: ID!
+  theater: Theater!
+  movie: Movie!
+  time: DateTime!
+  price: Int!
+  screen: Screen!
+  seats: [Seat!]!
+  tickets: [Ticket]
+}
+
+type Movie {
+  id: ID!
+  title: String!
+  description: String!
+  runtime: String!
+  rating: String!
+  releaseDate: String!
+  poster: String
+  trailer: String
+  showtimes: [Showtime]
+  nowPlaying: Boolean!
+  limitedRelease: Boolean!
+}
+
+type Screen {
+  id: ID!
+  theater: Theater!
+  showtimes: [Showtime]
+  seats: [Seat!]!
+  format: Format!
+  number: Int!
+}
+
+type Format {
+  id: ID!
+  type: String!
+  screens: [Screen!]!
+}
+
+type Seat {
+  id: ID!
+  screen: Screen!
+  showtime: Showtime!
+  name: String!
+  available: Boolean!
+  accessability: Boolean
+  ticket: Ticket
+}
+
+type Ticket {
+  id: ID!
+  showtime: Showtime!
+  seats: [Seat!]!
+  price: Int!
+  email: String!
+}
+
+type Testimonial {
+  id: ID!
+  text: String!
+  author: String!
+}
+
+type HomeFeatureItem {
+  id: ID!
+  title: String!
+  subtitle: String!
+  background: String
+  size: String!
+}
+
+type MembershipPerk {
+  id: ID!
+  text: String!
+}
+
+type AppFeature {
+  id: ID!
+  text: String!
+}
+
+type HomeHeroItem {
+  id: ID!
+  title: String!
+  subtitle: String!
+  buttonText: String!
+  background: String!
+  link: String!
+  movieTitle: String
+}
+
+type DiningFeature {
+  id: ID!
+  title: String!
+  description: String!
+}
+
+type DiningMenuItem {
+  id: ID!
+  item: String!
+  description: String!
+  price: String!
+  calories: String!
+  category: String!
+  background: String! 
+}
+
+type EventFeature {
+  id: ID!
+  title: String!
+  description: String!
+}
+
+type TheaterEvent {
+  id: ID!    
+  title: String!
+  subtitle: String!
+  description: String!  
+  date: String!
+  location: String!
+  bookingPhrase: String!
+  specialEvent: Boolean!
+  background: String!
+}
+
+type LuxuryFeature {
+  id: ID!
+  title: String!
+  description: String!
+}
+
+type LuxuryGalleryImage {
+  id: ID!
+  url: String!
+  label: String!
+  size: String!
+}
+
+type Query {
+    # Theaters
+    theaters: [Theater!]
+
+    # Showtimes
+    allShowtimes: [Showtime!]
+    showtimesByTheater(theaterId: ID!): [Showtime!]
+    showtimesByMovie(movieId: ID!, currentDate: String!): [Showtime!]
+
+    # Movies
+    allMovies: [Movie!]
+    nowPlayingMovies: [Movie!]
+    comingSoonMovies: [Movie!]
+    limitedReleaseMovies: [Movie!]
+
+    # Screens
+    allScreens: [Screen!]
+    screenByShowtime(showtimeId: ID!): Screen
+
+    # Formats
+    allFormats: [Format!]
+    formatByScreen(screenId: ID!): Format!
+
+    # Seats
+    allSeats: [Seat!]
+    seatsByShowtime(showtimeId: ID!): [Seat!]
+
+    # Tickets
+    tickets: [Ticket!]
+
+    #Testimonials
+    allTestimonials: [Testimonial!]
+
+    #HomeFeatureItem
+    homeFeatureItems: [HomeFeatureItem!]
+
+    #MembershipPerks
+    membershipPerks: [MembershipPerk!]
+
+    #AppFeatures
+    appFeatures: [AppFeature!]
+
+    #HomeHeroItems
+    homeHeroItems: [HomeHeroItem!]
+
+    #DiningFeatures
+    diningFeatures: [DiningFeature!]
+
+    #DiningMenu
+    diningMenuItems: [DiningMenuItem!]
+
+    #EventFeatures
+    eventFeatures: [EventFeature!]
+
+    #Event
+    theaterEvents: [TheaterEvent!]
+
+    #LuxuryFeatures
+    luxuryFeatures: [LuxuryFeature!]
+
+    #LuxuryGalleryImages
+    luxuryGalleryImages: [LuxuryGalleryImage!]
+}
+
+input SeatInput {
+  screenId: ID!
+  showtimeId: ID!
+  name: String!
+  available: Boolean!
+  accessability: Boolean
+}
+
+# input CreateTicketInput {
+#   showtimeId: ID!
+#   price: Float!
+#   seat: [Seat]!
+# }
+
+type Mutation {
+    createTheater(
+        name: String!,
+        address: String!,
+        city: String!,
+        state: String!,
+        zipCode: String!,
+        phoneNumber: String!,
+        openTime: String!,
+        closeTime: String!,
+        standard: Boolean,
+        imax: Boolean,
+        screenX: Boolean,
+        dolby: Boolean
+    ): Theater!
+
+    createMovie(  
+        title: String!        
+        description: String!  
+        runtime: String!      
+        rating: String!       
+        releaseDate: String!
+        poster: String!       
+        trailer: String!
+        nowPlaying: Boolean
+    ): Movie!
+
+    createFormat(
+      type: String!
+    ): Format!
+
+    createScreen(
+      theaterId: ID!
+      formatId: ID!
+      number: Int
+    ): Screen!
+
+    createShowtime(
+      theaterId: ID!
+      movieId: ID!
+      screenId: ID
+      time: DateTime!
+      price: Float
+    ): Showtime!
+
+    createSeats(seats: [SeatInput!]!): [Seat!]
+
+    createTestimonial(
+      text: String!
+      author: String!
+    ): Testimonial!
+
+    createHomeFeatureItem(
+      title: String!
+      subtitle: String!
+      background: String
+      size: String!
+    ): HomeFeatureItem!
+
+    createMembershipPerk(
+      text: String!
+    ): MembershipPerk!
+
+    createAppFeature(
+      text: String!
+    ): AppFeature!
+
+    createHomeHeroItem(
+      title: String!
+      subtitle: String
+      buttonText: String!
+      background: String!
+      link: String!
+      movieTitle: String = ""
+    ): HomeHeroItem!
+
+    createDiningFeature(
+      title: String!
+      description: String!
+    ): DiningFeature!
+
+    createDiningMenuItem(
+      item: String!
+      description: String!
+      price: String!
+      calories: String!
+      category: String!
+      background: String! 
+    ): DiningMenuItem!
+
+    createEventFeature(
+      title: String!
+      description: String!
+    ): EventFeature!
+
+    createTheaterEvent(
+      title: String!
+      subtitle: String!
+      description: String!  
+      date: String!
+      location: String!
+      bookingPhrase: String!
+      specialEvent: Boolean!
+      background: String!
+    ): TheaterEvent!
+
+    createLuxuryFeature(
+      title: String!
+      description: String!
+    ): LuxuryFeature!
+
+    createLuxuryGalleryImage(
+      url: String!
+      label: String!
+      size: String!
+    ): LuxuryGalleryImage!
+
+    createTicket(
+      showtimeId: ID!
+      price: Int!
+      seatIds: [ID!]!
+      email: String!
+    ): Ticket!
+}
+

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `Theater` ADD COLUMN `latitude` VARCHAR(191) NOT NULL DEFAULT '',
+    ADD COLUMN `longitude` VARCHAR(191) NOT NULL DEFAULT '';

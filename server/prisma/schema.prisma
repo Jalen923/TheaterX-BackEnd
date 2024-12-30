@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Format {
+  id     Int      @id @default(autoincrement())
+  type   String
+  Screen Screen[]
+}
+
+model Movie {
+  id                  Int         @id @default(autoincrement())
+  title               String
+  description         String      @db.VarChar(500)
+  runtime             String
+  rating              String
+  releaseDate         String
+  poster              String
+  trailer             String
+  nowPlaying          Boolean
+  Showtime            Showtime[]
+  limitedRelease      Boolean     @default(false)
+}
+
+model Screen {
+  id        Int        @id @default(autoincrement())
+  theaterId Int
+  formatId  Int
+  number    Int
+  Format    Format     @relation(fields: [formatId], references: [id])
+  Theater   Theater    @relation(fields: [theaterId], references: [id])
+  Seat      Seat[]
+  Showtime  Showtime[]
+
+  @@index([formatId], map: "Screen_formatId_fkey")
+  @@index([theaterId], map: "Screen_theaterId_fkey")
+}
+
+model Seat {
+  id            Int      @id @default(autoincrement())
+  screenId      Int
+  showtimeId    Int
+  name          String
+  available     Boolean
+  accessability Boolean
+  ticketId      Int?
+  Screen        Screen   @relation(fields: [screenId], references: [id])
+  Showtime      Showtime @relation(fields: [showtimeId], references: [id])
+  Ticket        Ticket?  @relation(fields: [ticketId], references: [id])
+
+  @@index([screenId], map: "Seat_screenId_fkey")
+  @@index([showtimeId], map: "Seat_showtimeId_fkey")
+  @@index([ticketId], map: "Seat_ticketId_fkey")
+}
+
+model Showtime {
+  id        Int      @id @default(autoincrement())
+  theaterId Int
+  movieId   Int
+  time      DateTime
+  price     Int
+  screenId  Int
+  Seat      Seat[]
+  Movie     Movie    @relation(fields: [movieId], references: [id])
+  Screen    Screen   @relation(fields: [screenId], references: [id])
+  Theater   Theater  @relation(fields: [theaterId], references: [id])
+  Ticket    Ticket[]
+
+  @@index([movieId], map: "Showtime_movieId_fkey")
+  @@index([screenId], map: "Showtime_screenId_fkey")
+  @@index([theaterId], map: "Showtime_theaterId_fkey")
+}
+
+model Theater {
+  id          Int        @id @default(autoincrement())
+  name        String
+  address     String
+  city        String
+  state       String
+  zipCode     String
+  phoneNumber String
+  openTime    String
+  closeTime   String
+  standard    Boolean
+  imax        Boolean
+  screenX     Boolean
+  dolby       Boolean
+  Screen      Screen[]
+  Showtime    Showtime[]
+  latitude    String @default("")
+  longitude   String @default("")
+}
+
+model Ticket {
+  id         Int      @id @default(autoincrement())
+  showtimeId Int
+  price      Int
+  Seat       Seat[]
+  Showtime   Showtime @relation(fields: [showtimeId], references: [id])
+  email      String   @db.VarChar(200) @default("")
+
+  @@index([showtimeId], map: "Ticket_showtimeId_fkey")
+}
+
+model Testimonial {
+  id         Int      @id @default(autoincrement())
+  text       String
+  author     String
+}
+
+model HomeFeatureItem {
+  id          Int     @id @default(autoincrement())
+  title       String
+  subtitle    String
+  background  String
+  size        String
+}
+
+model MembershipPerk {
+  id          Int     @id @default(autoincrement())
+  text        String
+}
+
+model AppFeature {
+  id          Int     @id @default(autoincrement())
+  text        String
+}
+
+model HomeHeroItem {
+  id          Int     @id @default(autoincrement())
+  title       String
+  subtitle    String
+  buttonText  String
+  background  String
+  link        String
+  movieTitle  String
+}
+
+model DiningFeature {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String @db.VarChar(250)
+}
+
+model DiningMenuItem {
+  id          Int     @id @default(autoincrement())
+  item        String
+  description String  @db.VarChar(250)
+  price       String
+  calories    String
+  category    String
+  background  String 
+}
+
+model EventFeature {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String @db.VarChar(300)
+}
+
+model TheaterEvent {
+  id            Int     @id @default(autoincrement())
+  title         String
+  subtitle      String
+  description   String  @db.VarChar(500)
+  date          String
+  location      String
+  bookingPhrase String
+  specialEvent  Boolean
+  background    String
+}
+
+model LuxuryFeature {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String @db.VarChar(250)
+}
+
+model LuxuryGalleryImage {
+  id          Int     @id @default(autoincrement())
+  url         String
+  label       String
+  size        String
+}

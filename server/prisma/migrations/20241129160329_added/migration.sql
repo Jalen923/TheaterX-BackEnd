@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Ticket` ADD COLUMN `email` VARCHAR(200) NOT NULL DEFAULT '';
