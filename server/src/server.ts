@@ -2,7 +2,8 @@ import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import resolvers from './resolvers'
+import cors from 'cors';  // Importing the cors package
+import resolvers from './resolvers';
 
 // Read the schema from the schema.graphql file
 const typeDefs = fs.readFileSync(path.join(__dirname, './schema.graphql'), 'utf-8');
@@ -11,10 +12,17 @@ const typeDefs = fs.readFileSync(path.join(__dirname, './schema.graphql'), 'utf-
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-  });
+});
 
-//app 
+// App setup
 const app = express();
+
+// Use CORS middleware
+app.use(cors({
+    origin: '*', // Or use * to allow all origins
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 // Start Apollo Server and apply it as middleware to the Express app
 const startServer = async () => {
@@ -22,7 +30,7 @@ const startServer = async () => {
     server.applyMiddleware({ app });
     
     // Start the Express app
-    app.listen({ port: 4000, host: '0.0.0.0'  }, () => {
+    app.listen({ port: 4000, host: '0.0.0.0' }, () => {
         console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
     });
 };
